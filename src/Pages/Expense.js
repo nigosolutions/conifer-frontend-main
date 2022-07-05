@@ -11,8 +11,10 @@ import {
   Modal,
   Radio,
   Input,
+  DatePicker,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
+import moment from "moment";
 
 const Expense = () => {
   const [dataSource, setDataSource] = useState([]);
@@ -64,8 +66,8 @@ const Expense = () => {
     return (
       <Modal
         visible={visible}
-        title="Create a new collection"
-        okText="Create"
+        title="Add a New Expense"
+        okText="Add"
         cancelText="Cancel"
         onCancel={onCancel}
         onOk={() => {
@@ -85,12 +87,13 @@ const Expense = () => {
           layout="vertical"
           name="form_in_modal"
           initialValues={{
+            date: moment(),
             modifier: "public",
           }}
         >
           <Form.Item
-            name="title"
-            label="Title"
+            name="date"
+            label="Date"
             rules={[
               {
                 required: true,
@@ -98,7 +101,7 @@ const Expense = () => {
               },
             ]}
           >
-            <Input />
+            <DatePicker defaultValue={moment()} />
           </Form.Item>
           <Form.Item name="description" label="Description">
             <Input type="textarea" />
