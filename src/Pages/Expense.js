@@ -12,8 +12,10 @@ import {
   Radio,
   Input,
   DatePicker,
+  Select,
+  Space,
 } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import moment from "moment";
 
 const Expense = () => {
@@ -62,6 +64,30 @@ const Expense = () => {
   };
 
   const AddExpenseForm = ({ visible, onCreate, onCancel }) => {
+    const projectcolumns = [
+      {
+        title: "Type",
+        dataIndex: "type",
+        key: "type",
+        render: (text) => <a>{text}</a>,
+      },
+      {
+        title: "Total Amount",
+        dataIndex: "amount",
+        key: "amount",
+      },
+      {
+        title: "Action",
+        key: "action",
+        render: (_, record) => (
+          <Space size="middle">
+            <a>Delete</a>
+          </Space>
+        ),
+      },
+    ];
+    const [pvisible, setPVisible] = useState(false);
+    const [selectCategory, setCategory] = useState(null);
     const [form] = Form.useForm();
     return (
       <Modal
@@ -85,10 +111,15 @@ const Expense = () => {
         <Form
           form={form}
           layout="vertical"
-          name="form_in_modal"
+          name="addexpenseform"
           initialValues={{
             date: moment(),
             modifier: "public",
+          }}
+          onValuesChange={(changedValues, AllValues) => {
+            if (changedValues.category) {
+              setCategory(changedValues.category);
+            }
           }}
         >
           <Form.Item
@@ -97,24 +128,139 @@ const Expense = () => {
             rules={[
               {
                 required: true,
-                message: "Please input the title of collection!",
+                message: "Please input the Date!",
               },
             ]}
           >
             <DatePicker defaultValue={moment()} />
           </Form.Item>
-          <Form.Item name="description" label="Description">
-            <Input type="textarea" />
-          </Form.Item>
           <Form.Item
-            name="modifier"
-            className="collection-create-form_last-form-item"
+            name="category"
+            label="Select Category"
+            rules={[
+              {
+                required: true,
+                message: "Please input the Expense Category!",
+              },
+            ]}
           >
-            <Radio.Group>
-              <Radio value="public">Public</Radio>
-              <Radio value="private">Private</Radio>
-            </Radio.Group>
+            <Select>
+              <Select.Option value="project">Project</Select.Option>
+              <Select.Option value="office">Office</Select.Option>
+              <Select.Option value="other">Other</Select.Option>
+            </Select>
           </Form.Item>
+          {selectCategory === "project" ? (
+            <>
+              <Form.Item
+                name="project"
+                label="Select Project"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input the Project!",
+                  },
+                ]}
+              >
+                <Select></Select>
+              </Form.Item>
+              <Button
+                type="dashed"
+                block
+                onClick={() => {
+                  setPVisible(true);
+                }}
+                icon={<PlusOutlined />}
+                style={{ marginBottom: 10 }}
+              >
+                Add Expense
+              </Button>
+              <AddProjectExpensForm
+                visible={pvisible}
+                onCreate={onCreate}
+                onCancel={() => {
+                  setPVisible(false);
+                }}
+              />
+              <Table columns={projectcolumns} />;
+            </>
+          ) : null}
+        </Form>
+      </Modal>
+    );
+  };
+
+  const AddProjectExpensForm = ({ visible, onCreate, onCancel }) => {
+    const [selectType, setType] = useState(null);
+    const [form] = Form.useForm();
+    return (
+      <Modal
+        visible={visible}
+        title="Add Expese for Project"
+        okText="Add"
+        cancelText="Cancel"
+        onCancel={onCancel}
+        onOk={() => {
+          form
+            .validateFields()
+            .then((values) => {
+              form.resetFields();
+              onCreate(values);
+            })
+            .catch((info) => {
+              console.log("Validate Failed:", info);
+            });
+        }}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          name="addprojectexpenseform"
+          onValuesChange={(changedValues, AllValues) => {
+            if (changedValues.type) {
+              setType(changedValues.type);
+            }
+          }}
+          initialValues={{
+            modifier: "public",
+          }}
+        >
+          <Form.Item
+            name="type"
+            label="Select Type"
+            rules={[
+              {
+                required: true,
+                message: "Please input the Type of expense!",
+              },
+            ]}
+          >
+            <Select>
+              <Select.Option value="material">Material</Select.Option>
+              <Select.Option value="extrawork">Extra Work</Select.Option>
+              <Select.Option value="subcontract">Sub-Contract</Select.Option>
+              <Select.Option value="other">Other</Select.Option>
+            </Select>
+          </Form.Item>
+          {selectType === "material" ? (
+            <Form.Item
+              name="material"
+              label="Select Material"
+              rules={[
+                {
+                  required: true,
+                  message: "Please select the Material!",
+                },
+              ]}
+            >
+              <Select>
+                <Select.Option value="cement">Cement</Select.Option>
+                <Select.Option value="extrawork">Extra Work</Select.Option>
+                <Select.Option value="subcontract">Sub-Contract</Select.Option>
+                <Select.Option value="other">Other</Select.Option>
+              </Select>
+            </Form.Item>
+          ) : null}
         </Form>
       </Modal>
     );
