@@ -420,6 +420,52 @@ const Expense = () => {
                   </Row>
                 </>
               ) : null}
+              {selectMaterial === "solidblock" ? (
+                <>
+                  <Form.Item
+                    name="size"
+                    label="Size"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please input the size!",
+                      },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                  <Row gutter={12}>
+                    <Col span={12}>
+                      <Form.Item
+                        name="amount"
+                        label="Total Amount"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please input the total amount!",
+                          },
+                        ]}
+                      >
+                        <Input />
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item
+                        name="quantity"
+                        label="Total Quantity (in Unit)"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please input the quantity!",
+                          },
+                        ]}
+                      >
+                        <Input />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </>
+              ) : null}
 
               <Form.Item name="remarks" label="Remarks">
                 <TextArea />
