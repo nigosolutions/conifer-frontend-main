@@ -17,6 +17,8 @@ import {
 } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import moment from "moment";
+import Column from "antd/lib/table/Column";
+import TextArea from "antd/lib/input/TextArea";
 
 const Expense = () => {
   const [dataSource, setDataSource] = useState([]);
@@ -182,7 +184,7 @@ const Expense = () => {
                   setPVisible(false);
                 }}
               />
-              <Table columns={projectcolumns} />;
+              <Table columns={projectcolumns} />
             </>
           ) : null}
         </Form>
@@ -191,6 +193,7 @@ const Expense = () => {
   };
 
   const AddProjectExpensForm = ({ visible, onCreate, onCancel }) => {
+    const [selectMaterial, setMaterial] = useState(null);
     const [selectType, setType] = useState(null);
     const [form] = Form.useForm();
     return (
@@ -220,6 +223,9 @@ const Expense = () => {
             if (changedValues.type) {
               setType(changedValues.type);
             }
+            if (changedValues.material) {
+              setMaterial(changedValues.material);
+            }
           }}
           initialValues={{
             modifier: "public",
@@ -243,23 +249,182 @@ const Expense = () => {
             </Select>
           </Form.Item>
           {selectType === "material" ? (
-            <Form.Item
-              name="material"
-              label="Select Material"
-              rules={[
-                {
-                  required: true,
-                  message: "Please select the Material!",
-                },
-              ]}
-            >
-              <Select>
-                <Select.Option value="cement">Cement</Select.Option>
-                <Select.Option value="extrawork">Extra Work</Select.Option>
-                <Select.Option value="subcontract">Sub-Contract</Select.Option>
-                <Select.Option value="other">Other</Select.Option>
-              </Select>
-            </Form.Item>
+            <>
+              <Form.Item
+                name="material"
+                label="Select Material"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select the Material!",
+                  },
+                ]}
+              >
+                <Select>
+                  <Select.Option value="cement">Cement</Select.Option>
+                  <Select.Option value="steel">Steel</Select.Option>
+                  <Select.Option value="aggregate">Aggregate</Select.Option>
+                  <Select.Option value="sand">Msand/Sand</Select.Option>
+                  <Select.Option value="solidblock">Solid Block</Select.Option>
+                  <Select.Option value="other">Other</Select.Option>
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name="supplier"
+                label="Supplier"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input the Supplier!",
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+
+              {selectMaterial === "cement" ? (
+                <>
+                  <Form.Item
+                    name="brand"
+                    label="Brand"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please input the brand!",
+                      },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                  <Row gutter={12}>
+                    <Col span={12}>
+                      <Form.Item
+                        name="amount"
+                        label="Total Amount"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please input the total amount!",
+                          },
+                        ]}
+                      >
+                        <Input />
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item
+                        name="quantity"
+                        label="Total Quantity (in bags)"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please input the quantity!",
+                          },
+                        ]}
+                      >
+                        <Input />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </>
+              ) : null}
+              {selectMaterial === "steel" ? (
+                <>
+                  <Form.Item
+                    name="brand"
+                    label="Brand"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please input the brand!",
+                      },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                  <Form.Item
+                    name="size"
+                    label="Size"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please input the size!",
+                      },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                  <Row gutter={12}>
+                    <Col span={12}>
+                      <Form.Item
+                        name="amount"
+                        label="Total Amount"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please input the total amount!",
+                          },
+                        ]}
+                      >
+                        <Input />
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item
+                        name="quantity"
+                        label="Total Quantity (in Kg)"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please input the quantity!",
+                          },
+                        ]}
+                      >
+                        <Input />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </>
+              ) : null}
+              {selectMaterial === "aggregate" || selectMaterial === "sand" ? (
+                <>
+                  <Row gutter={12}>
+                    <Col span={12}>
+                      <Form.Item
+                        name="amount"
+                        label="Total Amount"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please input the total amount!",
+                          },
+                        ]}
+                      >
+                        <Input />
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item
+                        name="quantity"
+                        label="Total Quantity (in Unit)"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please input the quantity!",
+                          },
+                        ]}
+                      >
+                        <Input />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </>
+              ) : null}
+
+              <Form.Item name="remarks" label="Remarks">
+                <TextArea />
+              </Form.Item>
+            </>
           ) : null}
         </Form>
       </Modal>
