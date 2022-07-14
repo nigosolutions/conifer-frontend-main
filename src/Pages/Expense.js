@@ -19,6 +19,7 @@ import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import moment from "moment";
 import Column from "antd/lib/table/Column";
 import TextArea from "antd/lib/input/TextArea";
+import { useNavigate } from "react-router-dom";
 
 const Expense = () => {
 	const [dataSource, setDataSource] = useState([]);
@@ -56,6 +57,8 @@ const Expense = () => {
 			key: "status",
 		},
 	];
+
+	let navigate = useNavigate();
 
 	const onFinish = (values) => {
 		console.log("Success:", values);
@@ -238,7 +241,7 @@ const Expense = () => {
 						type="primary"
 						block
 						onClick={() => {
-							setVisible(true);
+							navigate("/addExpense");
 						}}
 						style={{ float: "right", marginBottom: 10 }}
 					>

@@ -13,10 +13,12 @@ import {
 	Input,
 	DatePicker,
 	Select,
+	AutoComplete,
 	Space,
 } from "antd";
 import TextArea from "antd/lib/input/TextArea";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 import moment from "moment";
 
 const AddExpense = () => {
@@ -31,6 +33,7 @@ const AddExpense = () => {
 	]);
 	const [mainform] = Form.useForm();
 	const [projectform] = Form.useForm();
+	let navigate = useNavigate();
 
 	const projectColumns = [
 		{
@@ -54,6 +57,14 @@ const AddExpense = () => {
 			),
 		},
 	];
+
+	const subContract_onChange = (value) => {
+		console.log(`selected ${value}`);
+	};
+
+	const subContract_onSearch = (value) => {
+		console.log("search:", value);
+	};
 
 	const ProjectForm = () => (
 		<Form
@@ -307,11 +318,87 @@ const AddExpense = () => {
 							</Row>
 						</>
 					) : null}
-
-					<Form.Item name="remarks" label="Remarks">
-						<TextArea />
-					</Form.Item>
 				</>
+			) : selectType === "extrawork" ? (
+				<Row gutter={12}>
+					<Col span={12}>
+						<Form.Item
+							name="particular"
+							label="Particular / Type"
+							rules={[
+								{
+									required: true,
+									message: "Please input the quantity!",
+								},
+							]}
+						>
+							<Input />
+						</Form.Item>
+					</Col>
+					<Col span={12}>
+						<Form.Item
+							name="amount"
+							label="Total Amount"
+							rules={[
+								{
+									required: true,
+									message: "Please input the total amount!",
+								},
+							]}
+						>
+							<Input />
+						</Form.Item>
+					</Col>
+				</Row>
+			) : selectType === "subcontract" ? (
+				<Row gutter={12}>
+					<Col span={12}>
+						<Form.Item
+							name="particular"
+							label="Particular / Type"
+							rules={[
+								{
+									required: true,
+									message: "Please input the quantity!",
+								},
+							]}
+						>
+							<Select
+								showSearch
+								placeholder="Select a sub-contractor"
+								optionFilterProp="children"
+								onChange={subContract_onChange}
+								onSearch={subContract_onSearch}
+								filterOption={(input, option) =>
+									option.children.toLowerCase().includes(input.toLowerCase())
+								}
+							>
+								<Select.Option value="jack">Jack</Select.Option>
+								<Select.Option value="lucy">Lucy</Select.Option>
+								<Select.Option value="tom">Tom</Select.Option>
+							</Select>
+						</Form.Item>
+					</Col>
+					<Col span={12}>
+						<Form.Item
+							name="amount"
+							label="Total Amount"
+							rules={[
+								{
+									required: true,
+									message: "Please input the total amount!",
+								},
+							]}
+						>
+							<Input />
+						</Form.Item>
+					</Col>
+				</Row>
+			) : null}
+			{selectType ? (
+				<Form.Item name="remarks" label="Remarks">
+					<TextArea />
+				</Form.Item>
 			) : null}
 		</Form>
 	);
@@ -404,7 +491,30 @@ const AddExpense = () => {
 							/>
 							<br />
 							{addProjectExpense ? (
-								<ProjectForm />
+								<>
+									<ProjectForm />
+									<Row gutter={4} style={{ float: "right" }}>
+										<Col>
+											<Button
+												size="small"
+												type="primary"
+												onClick={() => setAddPE(false)}
+											>
+												Add Expense
+											</Button>
+										</Col>
+										<Col>
+											<Button
+												size="small"
+												type="primary"
+												onClick={() => setAddPE(false)}
+												danger
+											>
+												Cancel
+											</Button>
+										</Col>
+									</Row>
+								</>
 							) : (
 								<Button
 									type="dashed"
@@ -427,9 +537,38 @@ const AddExpense = () => {
 
 	return (
 		<div>
-			<Divider orientation="left" orientationMargin="0">
-				Add a new Expense
-			</Divider>
+			<Row>
+				<Col span={20}>
+					<Divider orientation="left" orientationMargin="0">
+						Add a new Expense
+					</Divider>
+				</Col>
+				<Col span={4}>
+					<Row gutter={4} style={{ marginTop: "10px", float: "right" }}>
+						<Col>
+							<Button
+								type="primary"
+								onClick={() => {
+									navigate("/expense");
+								}}
+							>
+								Save
+							</Button>
+						</Col>
+						<Col>
+							<Button
+								type="primary"
+								danger
+								onClick={() => {
+									navigate("/expense");
+								}}
+							>
+								Cancel
+							</Button>
+						</Col>
+					</Row>
+				</Col>
+			</Row>
 			<Row>
 				<Col span={24}>
 					<MainForm />
