@@ -1,23 +1,19 @@
 import {
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
+  RiseOutlined,
+  ProjectOutlined,
+  BankOutlined,
+  PlusOutlined,
 } from "@ant-design/icons";
 import { Image, Layout, Menu } from "antd";
 import React from "react";
 import { Outlet } from "react-router-dom";
+import logo from "./clogo.png";
 const { Header, Content, Footer, Sider } = Layout;
-const items = [UserOutlined, VideoCameraOutlined, UploadOutlined].map(
-  (icon, index) => ({
-    key: String(index + 1),
-    icon: React.createElement(icon),
-    label: `nav ${index + 1}`,
-  })
-);
 
 const App = () => (
   <Layout hasSider>
     <Sider
+      theme="light"
       style={{
         overflow: "auto",
         height: "100vh",
@@ -28,14 +24,21 @@ const App = () => (
       }}
     >
       <div className="logo">
-        <Image src="" />
+        <Image src={logo} />
       </div>
-      <Menu
-        theme="dark"
-        mode="inline"
-        defaultSelectedKeys={["4"]}
-        items={items}
-      />
+      <Menu theme="light" mode="inline" defaultSelectedKeys={["projects"]}>
+        <Menu.Item key="projects" icon={<ProjectOutlined />}>
+          Projects
+        </Menu.Item>
+        <Menu.SubMenu key="expense" title="Expense" icon={<RiseOutlined />}>
+          <Menu.Item key="addexpense" icon={<PlusOutlined />}>
+            Add Expense
+          </Menu.Item>
+        </Menu.SubMenu>
+        <Menu.Item key="fundmanager" icon={<BankOutlined />}>
+          Fund Manager
+        </Menu.Item>
+      </Menu>
     </Sider>
     <Layout
       className="site-layout"
