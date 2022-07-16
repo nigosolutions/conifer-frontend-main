@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Project from "./Pages/Project";
 import Expense from "./Pages/Expense";
 import AddExpense from "./Pages/AddExpense";
-import FundManage from "./Pages/FundManage";
+import FundManager from "./Pages/FundManager";
 
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
             <Route path="/project" element={<Project />} />
             <Route path="/expense" element={<Expense />} />
             <Route path="/addExpense" element={<AddExpense />} />
-            <Route path="/fundmanager" element={<FundManage />} />
+            <Route path="/fundmanager" element={<FundManager />} />
           </Route>
         </Routes>
       </BrowserRouter>

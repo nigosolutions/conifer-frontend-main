@@ -345,7 +345,7 @@ const FundTransferForm = ({ visible, onCreate, onCancel }) => {
   );
 };
 
-function FundManage(props) {
+function FundManager(props) {
   const [modal1Visible, setModal1Visible] = useState(false);
   const [modal2Visible, setModal2Visible] = useState(false);
   const [modal3Visible, setModal3Visible] = useState(false);
@@ -436,4 +436,4 @@ function FundManage(props) {
   );
 }
 
-export default FundManage;
+export default FundManager;
