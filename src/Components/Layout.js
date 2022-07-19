@@ -11,28 +11,28 @@ import {
   EditOutlined,
 } from "@ant-design/icons";
 import { Avatar, Divider, Image, Layout, Menu } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import logo from "./clogo.png";
 
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 const { Header, Content, Footer, Sider } = Layout;
 
-const headings = {
-  "/": "Dashboard",
-  "/buildings": "Buildings",
-  "/workorder": "Work Orders",
-  "/notifications": "Notifications",
-};
-
 React.useLayoutEffect = React.useEffect;
 
 const LayoutComponent = () => {
+  let navigate = useNavigate();
+  let location = useLocation();
+
+  const [pathName, setPathName] = useState(null);
   const [collapsed, setCollapsed] = useState(true);
   const [showButton, setShowButton] = useState(false);
 
-  let navigate = useNavigate();
-  let location = useLocation();
+  useEffect(() => {
+    if (location.pathname === "/") navigate("/project");
+    else setPathName(location.pathname);
+    console.log(pathName);
+  }, [location.pathname]);
 
   return (
     <div>
@@ -42,7 +42,7 @@ const LayoutComponent = () => {
             zIndex: 999,
             top: 3,
             left: 8,
-            height: "40px",
+            height: "100vh",
             position: "fixed",
             display: showButton ? "inline-block" : "none",
             color: "black",
@@ -60,12 +60,11 @@ const LayoutComponent = () => {
               display: "none",
             }}
           >
-            <Menu theme="dark" mode="horizontal"></Menu>
+            <Menu theme="light" mode="horizontal"></Menu>
           </Header>
         )}
         <Sider
           theme="light"
-          width={170}
           style={{
             overflow: "auto",
             height: "100%",
@@ -80,50 +79,56 @@ const LayoutComponent = () => {
           onBreakpoint={(val) => setShowButton(val)}
         >
           <div className="logo">
-            <Image src={logo} />
+            <Image src={logo} preview={false} />
           </div>
           <Menu
             theme="light"
             mode="inline"
-            defaultSelectedKeys={[location.pathname]}
+            defaultSelectedKeys={pathName}
+            selectedKeys={[pathName]}
             onClick={(item) => navigate(item.key)}
           >
-            <Menu.Item key="project" icon={<ProjectOutlined />}>
+            <Menu.Item key="/project" icon={<ProjectOutlined />}>
               Projects
             </Menu.Item>
-            <Menu.SubMenu
-              onTitleClick={(item) => navigate(item.key)}
-              key="expense"
-              title="Expense"
-              icon={<RiseOutlined />}
-            >
-              <Menu.Item key="addexpense" icon={<PlusOutlined />}>
-                Add Expense
-              </Menu.Item>
-            </Menu.SubMenu>
-            <Menu.Item key="fundmanager" icon={<BankOutlined />}>
+
+            <Menu.Item key="/expense" icon={<RiseOutlined />}>
+              Expense
+            </Menu.Item>
+
+            <Menu.Item key="/fundManager" icon={<BankOutlined />}>
               Fund Manager
             </Menu.Item>
-            <Menu.Item key="reports" icon={<FormOutlined />}>
+            <Menu.Item key="/reports" icon={<FormOutlined />}>
               Reports
             </Menu.Item>
 
             <Divider />
-            <Menu.SubMenu key="user" title="User" icon={<UserOutlined />}>
+
+            <Menu.SubMenu
+              style={{ position: "absolute", bottom: 70 }}
+              key="user"
+              title="User"
+              icon={<UserOutlined />}
+            >
               <Menu.Item key="changepassword" icon={<EditOutlined />}>
                 Change Password
               </Menu.Item>
-              <Menu.Item key="logout" icon={<LogoutOutlined />}>
-                Signout
-              </Menu.Item>
             </Menu.SubMenu>
+            <Menu.Item
+              style={{ position: "absolute", bottom: 20 }}
+              key="logout"
+              icon={<LogoutOutlined />}
+            >
+              Signout
+            </Menu.Item>
           </Menu>
         </Sider>
 
         <Layout
           className="site-layout sidebar"
           style={{
-            marginLeft: showButton ? 0 : 170,
+            marginLeft: showButton ? 0 : 200,
             marginTop: 0,
           }}
         >

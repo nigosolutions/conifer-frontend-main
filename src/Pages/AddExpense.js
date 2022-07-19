@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Row,
   Col,
@@ -15,14 +15,20 @@ import {
   Select,
   AutoComplete,
   Space,
+  message,
+  InputNumber,
 } from "antd";
 import TextArea from "antd/lib/input/TextArea";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
+import api from "../axios.config";
+import Project from "./Project";
 
 const AddExpense = () => {
   const [selectMaterial, setMaterial] = useState(null);
+  const [Projects, setProjects] = useState([]);
+  const [projectLoading, setLoading] = useState(false);
   const [selectType, setType] = useState(null);
   const [pvisible, setPVisible] = useState(false);
   const [projectSelected, setProjectSelected] = useState(null);
@@ -33,6 +39,9 @@ const AddExpense = () => {
   ]);
   const [mainform] = Form.useForm();
   const [projectform] = Form.useForm();
+  useEffect(() => {
+    getAllProjects();
+  }, []);
   let navigate = useNavigate();
 
   const projectColumns = [
@@ -57,6 +66,22 @@ const AddExpense = () => {
       ),
     },
   ];
+
+  const getAllProjects = () => {
+    setLoading(true);
+    api
+      .get("/project")
+      .then((res) => {
+        setProjects(res.data.message.Items);
+        console.log(res.data.message.Items);
+      })
+      .catch((err) => {
+        message.error("Error in fetching project details !");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   const subContract_onChange = (value) => {
     console.log(`selected ${value}`);
@@ -160,7 +185,12 @@ const AddExpense = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <InputNumber
+                      prefix="₹"
+                      style={{
+                        width: "100%",
+                      }}
+                    />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
@@ -174,7 +204,12 @@ const AddExpense = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <InputNumber
+                      addonAfter="bags"
+                      style={{
+                        width: "100%",
+                      }}
+                    />
                   </Form.Item>
                 </Col>
               </Row>
@@ -218,7 +253,12 @@ const AddExpense = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <InputNumber
+                      prefix="₹"
+                      style={{
+                        width: "100%",
+                      }}
+                    />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
@@ -232,7 +272,12 @@ const AddExpense = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <InputNumber
+                      addonAfter="Kg"
+                      style={{
+                        width: "100%",
+                      }}
+                    />
                   </Form.Item>
                 </Col>
               </Row>
@@ -252,7 +297,12 @@ const AddExpense = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <InputNumber
+                      prefix="₹"
+                      style={{
+                        width: "100%",
+                      }}
+                    />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
@@ -266,7 +316,12 @@ const AddExpense = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <InputNumber
+                      addonAfter="Unit"
+                      style={{
+                        width: "100%",
+                      }}
+                    />
                   </Form.Item>
                 </Col>
               </Row>
@@ -298,7 +353,12 @@ const AddExpense = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <InputNumber
+                      prefix="₹"
+                      style={{
+                        width: "100%",
+                      }}
+                    />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
@@ -312,7 +372,12 @@ const AddExpense = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <InputNumber
+                      addonAfter="Unit"
+                      style={{
+                        width: "100%",
+                      }}
+                    />
                   </Form.Item>
                 </Col>
               </Row>
@@ -346,7 +411,12 @@ const AddExpense = () => {
                 },
               ]}
             >
-              <Input />
+              <InputNumber
+                prefix="₹"
+                style={{
+                  width: "100%",
+                }}
+              />
             </Form.Item>
           </Col>
         </Row>
@@ -390,15 +460,60 @@ const AddExpense = () => {
                 },
               ]}
             >
-              <Input />
+              <InputNumber
+                prefix="₹"
+                style={{
+                  width: "100%",
+                }}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+      ) : selectType === "other" ? (
+        <Row>
+          <Col span={24}>
+            <Form.Item
+              name="amount"
+              label="Total Amount"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input the total amount!",
+                },
+              ]}
+            >
+              <InputNumber
+                prefix="₹"
+                style={{
+                  width: "100%",
+                }}
+              />
             </Form.Item>
           </Col>
         </Row>
       ) : null}
       {selectType ? (
-        <Form.Item name="remarks" label="Remarks">
-          <TextArea />
-        </Form.Item>
+        <>
+          <Form.Item name="remarks" label="Remarks">
+            <TextArea />
+          </Form.Item>
+          <Row gutter={4} style={{ float: "right" }}>
+            <Col>
+              <Button
+                type="primary"
+                htmlType="submit"
+                onClick={() => setAddPE(false)}
+              >
+                Add
+              </Button>
+            </Col>
+            <Col>
+              <Button type="primary" onClick={() => setAddPE(false)} danger>
+                Cancel
+              </Button>
+            </Col>
+          </Row>
+        </>
       ) : null}
     </Form>
   );
@@ -469,20 +584,17 @@ const AddExpense = () => {
             ]}
           >
             <Select>
-              <Select.Option value="project1">Project 1</Select.Option>
+              {Projects.map((item) => (
+                <Select.Option value={item.id}>{item.name}</Select.Option>
+              ))}
             </Select>
           </Form.Item>
-          {/* <AddProjectExpensForm
-						visible={pvisible}
-						onCreate={onCreate}
-						onCancel={() => {
-							setPVisible(false);
-						}}
-					/> */}
+
           {projectSelected && (
             <>
               <span style={{ fontStyle: "italic", color: "gray" }}>
-                &nbsp; Expenses of {projectSelected}
+                &nbsp; Expenses of{" "}
+                {Projects.find((x) => x.id === projectSelected).name}
               </span>
               <Table
                 columns={projectColumns}
@@ -491,30 +603,7 @@ const AddExpense = () => {
               />
               <br />
               {addProjectExpense ? (
-                <>
-                  <ProjectForm />
-                  <Row gutter={4} style={{ float: "right" }}>
-                    <Col>
-                      <Button
-                        size="small"
-                        type="primary"
-                        onClick={() => setAddPE(false)}
-                      >
-                        Add Expense
-                      </Button>
-                    </Col>
-                    <Col>
-                      <Button
-                        size="small"
-                        type="primary"
-                        onClick={() => setAddPE(false)}
-                        danger
-                      >
-                        Cancel
-                      </Button>
-                    </Col>
-                  </Row>
-                </>
+                <ProjectForm />
               ) : (
                 <Button
                   type="dashed"
@@ -538,12 +627,12 @@ const AddExpense = () => {
   return (
     <div>
       <Row>
-        <Col span={20}>
+        <Col span={22}>
           <Divider orientation="left" orientationMargin="0">
             Add a new Expense
           </Divider>
         </Col>
-        <Col span={4}>
+        <Col span={2}>
           <Row gutter={4} style={{ marginTop: "10px", float: "right" }}>
             <Col>
               <Button
@@ -552,18 +641,7 @@ const AddExpense = () => {
                   navigate("/expense");
                 }}
               >
-                Save
-              </Button>
-            </Col>
-            <Col>
-              <Button
-                type="primary"
-                danger
-                onClick={() => {
-                  navigate("/expense");
-                }}
-              >
-                Cancel
+                Done
               </Button>
             </Col>
           </Row>
@@ -573,9 +651,6 @@ const AddExpense = () => {
         <Col span={24}>
           <MainForm />
         </Col>
-        {/* <Col span={24}>
-					<ProjectForm />
-				</Col> */}
       </Row>
     </div>
   );

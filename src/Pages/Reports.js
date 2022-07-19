@@ -1,4 +1,4 @@
-import { Button, Card, Divider, List, Select } from "antd";
+import { Button, Card, Divider, List, Modal, Select } from "antd";
 import { useState } from "react";
 const { Option } = Select;
 const onChange = (value) => {
@@ -11,36 +11,15 @@ const onSearch = (value) => {
 const data = [
   {
     title: "Total Accounts",
-    content: (
-      <>
-        Summary of total accounts.
-        <br />
-        <br />
-        <Button type="primary">Download</Button>
-      </>
-    ),
+    content: <>Summary of total accounts.</>,
   },
   {
     title: "Project Accounts",
-    content: (
-      <>
-        Summary of accounts for selected project.
-        <br />
-        <br />
-        <Button type="primary">Download</Button>
-      </>
-    ),
+    content: <>Summary of accounts for selected project.</>,
   },
   {
     title: "User Expenses",
-    content: (
-      <>
-        Total expenses made by the selected user.
-        <br />
-        <br />
-        <Button type="primary">Download</Button>
-      </>
-    ),
+    content: <>Total expenses made by the selected user.</>,
   },
 ];
 
@@ -58,7 +37,11 @@ function Reports(props) {
         dataSource={data}
         renderItem={(item) => (
           <List.Item>
-            <Card title={item.title}>{item.content}</Card>
+            <Card title={item.title}>
+              {item.content} <br />
+              <br />
+              <Button type="primary">Download</Button>
+            </Card>
           </List.Item>
         )}
       />
