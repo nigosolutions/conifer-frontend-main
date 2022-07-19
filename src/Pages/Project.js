@@ -1,39 +1,289 @@
-import React, { useState } from "react";
-import { Row, Col, Table, Form, Input, Divider, Button } from "antd";
+import { useState, useEffect } from "react";
+import {
+	Row,
+	Col,
+	Table,
+	Form,
+	Input,
+	Divider,
+	Button,
+	message,
+	InputNumber,
+	Popconfirm,
+	Typography,
+	Tooltip,
+} from "antd";
+import {
+	LoadingOutlined,
+	EditOutlined,
+	DeleteOutlined,
+	CloseOutlined,
+	SaveOutlined,
+} from "@ant-design/icons";
+import api from "../axios.config";
+
+const EditableCell = ({
+	editing,
+	dataIndex,
+	title,
+	inputType,
+	record,
+	index,
+	children,
+	...restProps
+}) => {
+	const inputNode =
+		inputType === "number" ? (
+			<InputNumber size="small" />
+		) : (
+			<Input size="small" />
+		);
+	return (
+		<td {...restProps}>
+			{editing ? (
+				<Form.Item
+					name={dataIndex}
+					style={{
+						margin: 0,
+					}}
+					rules={[
+						{
+							required: true,
+							message: `Please Input ${title}!`,
+						},
+					]}
+				>
+					{inputNode}
+				</Form.Item>
+			) : (
+				children
+			)}
+		</td>
+	);
+};
 
 const Project = () => {
 	const [form] = Form.useForm();
-	const [dataSource, setDataSource] = useState([]);
+	const [addProjectLoading, setAPLoading] = useState(false);
+	const [projectTableLoading, setPTLoading] = useState(false);
+	const [saveLoading, setSaveLoading] = useState(false);
+	const [deleteLoading, setDeleteLoading] = useState(false);
+	const [editForm] = Form.useForm();
+	const [data, setData] = useState([]);
+	const [editingKey, setEditingKey] = useState("");
+
+	const isEditing = (record) => record.id === editingKey;
+
+	const edit = (record) => {
+		editForm.setFieldsValue({
+			name: "",
+			number: "",
+			location: "",
+			contact: "",
+			type: "",
+			...record,
+		});
+		setEditingKey(record.id);
+	};
+
+	const cancel = () => {
+		setEditingKey("");
+	};
+
+	const deleteProject = (id) => {
+		// setDeleteLoading(true);
+		return api
+			.delete("/project", { data: { id } })
+			.then((res) => {
+				getAllProjects();
+				console.log(id);
+				console.log(res);
+			})
+			.catch((err) => console.log(err))
+			.finally(() => {
+				// setDeleteLoading(false);
+			});
+	};
+
+	const save = async (id) => {
+		try {
+			const item = await editForm.validateFields();
+			setSaveLoading(true);
+			api
+				.put("/project", { id, item })
+				.then((res) => {
+					console.log(res);
+					setEditingKey("");
+					getAllProjects();
+				})
+				.catch((err) => {
+					message.error("Error updating project details!");
+				})
+				.finally(() => {
+					setSaveLoading(false);
+				});
+			// const newData = [...data];
+			// const index = newData.findIndex((item) => id === item.id);
+
+			// if (index > -1) {
+			// 	const item = newData[index];
+			// 	newData.splice(index, 1, { ...item, ...row });
+			// 	setData(newData);
+			// 	setEditingKey("");
+			// } else {
+			// 	newData.push(row);
+			// 	setData(newData);
+			// 	setEditingKey("");
+			// }
+		} catch (errInfo) {
+			console.log("Validate Failed:", errInfo);
+		}
+	};
+
 	const columns = [
 		{
 			title: "Project No.",
 			dataIndex: "number",
-			key: "number",
+			editable: false,
 		},
 		{
 			title: "Name",
 			dataIndex: "name",
-			key: "name",
+			editable: true,
 		},
 		{
 			title: "Type",
 			dataIndex: "type",
-			key: "type",
-		},
-		{
-			title: "Location",
-			dataIndex: "location",
-			key: "location",
+			editable: true,
 		},
 		{
 			title: "Contact",
 			dataIndex: "contact",
-			key: "contact",
+			editable: true,
+		},
+		{
+			title: "Location",
+			dataIndex: "location",
+			editable: true,
+		},
+		{
+			title: "Action",
+			dataIndex: "operation",
+			render: (_, record) => {
+				const editable = isEditing(record);
+				return editable ? (
+					<span>
+						{saveLoading ? (
+							<LoadingOutlined />
+						) : (
+							<>
+								<Typography.Link
+									onClick={() => save(record.id)}
+									style={{
+										marginRight: 8,
+									}}
+								>
+									<Tooltip title="Save">
+										<SaveOutlined />
+									</Tooltip>
+								</Typography.Link>
+								<Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+									<a>
+										<Tooltip title="Cancel">
+											<CloseOutlined />
+										</Tooltip>
+									</a>
+								</Popconfirm>
+							</>
+						)}
+					</span>
+				) : (
+					<>
+						<Typography.Link
+							disabled={editingKey !== ""}
+							onClick={() => edit(record)}
+						>
+							<Tooltip title="Edit">
+								<EditOutlined />
+							</Tooltip>
+						</Typography.Link>
+						<Popconfirm
+							title="Are you sure you want to delete this record ?"
+							okText="Delete"
+							onConfirm={() => deleteProject(record.id)}
+						>
+							<Typography.Link
+								disabled={editingKey !== ""}
+								type="danger"
+								style={{
+									marginLeft: "10px",
+								}}
+							>
+								<Tooltip title="Delete">
+									<DeleteOutlined />
+								</Tooltip>
+							</Typography.Link>
+						</Popconfirm>
+					</>
+				);
+			},
 		},
 	];
+	const mergedColumns = columns.map((col) => {
+		if (!col.editable) {
+			return col;
+		}
+
+		return {
+			...col,
+			onCell: (record) => ({
+				record,
+				inputType: col.dataIndex === "contact" ? "number" : "text",
+				dataIndex: col.dataIndex,
+				title: col.title,
+				editing: isEditing(record),
+			}),
+		};
+	});
+
+	const EditableTable = () => (
+		<Form form={editForm} component={false}>
+			<Table
+				size="small"
+				components={{
+					body: {
+						cell: EditableCell,
+					},
+				}}
+				bordered
+				loading={projectTableLoading}
+				dataSource={data}
+				columns={mergedColumns}
+				rowClassName="editable-row"
+				pagination={{
+					onChange: cancel,
+				}}
+			/>
+		</Form>
+	);
 
 	const onFinish = (values) => {
+		setAPLoading(true);
 		console.log("Success:", values);
+		api
+			.post("/project", { project: values })
+			.then((res) => {
+				console.log(res);
+				form.resetFields();
+				getAllProjects();
+				message.success("Project added Successfully!");
+			})
+			.catch((err) => {
+				message.error("Error!");
+			})
+			.finally(() => {
+				setAPLoading(false);
+			});
 	};
 
 	const onReset = (values) => {
@@ -42,6 +292,26 @@ const Project = () => {
 
 	const onFinishFailed = (errorInfo) => {
 		console.log("Failed:", errorInfo);
+	};
+
+	useEffect(() => {
+		getAllProjects();
+	}, []);
+
+	const getAllProjects = () => {
+		setPTLoading(true);
+		api
+			.get("/project")
+			.then((res) => {
+				setData(res.data.message.Items);
+				console.log(res.data.message.Items);
+			})
+			.catch((err) => {
+				message.error("Error in fetching project details !");
+			})
+			.finally(() => {
+				setPTLoading(false);
+			});
 	};
 
 	const AddPropertyForm = () => (
@@ -97,11 +367,16 @@ const Project = () => {
 					<Input />
 				</Form.Item>
 				<Form.Item>
-					<Button type="primary" htmlType="submit">
+					<Button
+						size="middle"
+						loading={addProjectLoading}
+						type="primary"
+						htmlType="submit"
+					>
 						Add Project
 					</Button>{" "}
 					&nbsp;
-					<Button htmlType="button" onClick={onReset}>
+					<Button size="middle" htmlType="button" onClick={onReset}>
 						Clear
 					</Button>
 				</Form.Item>
@@ -116,7 +391,7 @@ const Project = () => {
 					<Divider orientation="left" orientationMargin="0">
 						Project Details
 					</Divider>
-					<Table dataSource={dataSource} columns={columns} />
+					<EditableTable />
 				</Col>
 				<Col span={8}>
 					<AddPropertyForm />
