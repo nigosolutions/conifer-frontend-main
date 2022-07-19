@@ -3,73 +3,152 @@ import {
   ProjectOutlined,
   BankOutlined,
   PlusOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  FormOutlined,
+  UserOutlined,
+  LogoutOutlined,
+  EditOutlined,
 } from "@ant-design/icons";
-import { Image, Layout, Menu } from "antd";
-import React from "react";
-import { Outlet } from "react-router-dom";
+import { Avatar, Divider, Image, Layout, Menu } from "antd";
+import React, { useState } from "react";
 import logo from "./clogo.png";
+
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+
 const { Header, Content, Footer, Sider } = Layout;
 
-const App = () => (
-  <Layout hasSider>
-    <Sider
-      theme="light"
-      style={{
-        overflow: "auto",
-        height: "100vh",
-        position: "fixed",
-        left: 0,
-        top: 0,
-        bottom: 0,
-      }}
-    >
-      <div className="logo">
-        <Image src={logo} />
-      </div>
-      <Menu theme="light" mode="inline" defaultSelectedKeys={["projects"]}>
-        <Menu.Item key="projects" icon={<ProjectOutlined />}>
-          Projects
-        </Menu.Item>
-        <Menu.SubMenu key="expense" title="Expense" icon={<RiseOutlined />}>
-          <Menu.Item key="addexpense" icon={<PlusOutlined />}>
-            Add Expense
-          </Menu.Item>
-        </Menu.SubMenu>
-        <Menu.Item key="fundmanager" icon={<BankOutlined />}>
-          Fund Manager
-        </Menu.Item>
-      </Menu>
-    </Sider>
-    <Layout
-      className="site-layout"
-      style={{
-        marginLeft: 200,
-      }}
-    >
-      <Content
-        style={{
-          margin: "24px 16px 0",
-          overflow: "initial",
-        }}
-      >
+const headings = {
+  "/": "Dashboard",
+  "/buildings": "Buildings",
+  "/workorder": "Work Orders",
+  "/notifications": "Notifications",
+};
+
+React.useLayoutEffect = React.useEffect;
+
+const LayoutComponent = () => {
+  const [collapsed, setCollapsed] = useState(true);
+  const [showButton, setShowButton] = useState(false);
+
+  let navigate = useNavigate();
+  let location = useLocation();
+
+  return (
+    <div>
+      <Layout>
         <div
-          className="site-layout-background"
           style={{
-            padding: 24,
+            zIndex: 999,
+            top: 3,
+            left: 8,
+            height: "40px",
+            position: "fixed",
+            display: showButton ? "inline-block" : "none",
+            color: "black",
+            cursor: "pointer",
+            fontSize: 18,
+          }}
+          onClick={() => setCollapsed(!collapsed)}
+        >
+          {collapsed ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />}
+        </div>
+        {showButton && (
+          <Header
+            style={{
+              position: "absolute",
+              display: "none",
+            }}
+          >
+            <Menu theme="dark" mode="horizontal"></Menu>
+          </Header>
+        )}
+        <Sider
+          theme="light"
+          width={170}
+          style={{
+            overflow: "auto",
+            height: "100%",
+            position: "fixed",
+            left: 0,
+            zIndex: 998,
+          }}
+          breakpoint="lg"
+          collapsed={collapsed}
+          onCollapse={(val) => setCollapsed(val)}
+          collapsedWidth={0}
+          onBreakpoint={(val) => setShowButton(val)}
+        >
+          <div className="logo">
+            <Image src={logo} />
+          </div>
+          <Menu
+            theme="light"
+            mode="inline"
+            defaultSelectedKeys={[location.pathname]}
+            onClick={(item) => navigate(item.key)}
+          >
+            <Menu.Item key="project" icon={<ProjectOutlined />}>
+              Projects
+            </Menu.Item>
+            <Menu.SubMenu
+              onTitleClick={(item) => navigate(item.key)}
+              key="expense"
+              title="Expense"
+              icon={<RiseOutlined />}
+            >
+              <Menu.Item key="addexpense" icon={<PlusOutlined />}>
+                Add Expense
+              </Menu.Item>
+            </Menu.SubMenu>
+            <Menu.Item key="fundmanager" icon={<BankOutlined />}>
+              Fund Manager
+            </Menu.Item>
+            <Menu.Item key="reports" icon={<FormOutlined />}>
+              Reports
+            </Menu.Item>
+
+            <Divider />
+            <Menu.SubMenu key="user" title="User" icon={<UserOutlined />}>
+              <Menu.Item key="changepassword" icon={<EditOutlined />}>
+                Change Password
+              </Menu.Item>
+              <Menu.Item key="logout" icon={<LogoutOutlined />}>
+                Signout
+              </Menu.Item>
+            </Menu.SubMenu>
+          </Menu>
+        </Sider>
+
+        <Layout
+          className="site-layout sidebar"
+          style={{
+            marginLeft: showButton ? 0 : 170,
+            marginTop: 0,
           }}
         >
-          <Outlet />
-        </div>
-      </Content>
-      <Footer
-        style={{
-          textAlign: "center",
-        }}
-      >
-        Conifer Group ©2022
-      </Footer>
-    </Layout>
-  </Layout>
-);
+          <Content
+            style={{
+              borderRadius: showButton ? "0" : "2px 0 0 0",
+              overflow: "initial",
+            }}
+          >
+            <div
+              className="site-layout-background"
+              style={{ backgroundColor: "#F7F7F7", padding: 15 }}
+            >
+              <div style={{ backgroundColor: "#FFFF", padding: 24 }}>
+                <Outlet />
+              </div>
+            </div>
+          </Content>
+          <Footer style={{ textAlign: "center", backgroundColor: "#F7F7F7" }}>
+            CONIFER GROUP ©2022
+          </Footer>
+        </Layout>
+      </Layout>
+    </div>
+  );
+};
 
-export default App;
+export default LayoutComponent;
