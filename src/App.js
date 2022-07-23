@@ -6,6 +6,7 @@ import Expense from "./Pages/Expense";
 import AddExpense from "./Pages/AddExpense";
 import FundManager from "./Pages/FundManager";
 import Reports from "./Pages/Reports";
+import Approvals from "./Pages/Approvals";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             <Route path="/addExpense" element={<AddExpense />} />
             <Route path="/fundmanager" element={<FundManager />} />
             <Route path="/reports" element={<Reports />} />
+            <Route path="/approvals" element={<Approvals />} />
           </Route>
         </Routes>
       </BrowserRouter>

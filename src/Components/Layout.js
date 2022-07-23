@@ -9,6 +9,7 @@ import {
   UserOutlined,
   LogoutOutlined,
   EditOutlined,
+  InboxOutlined,
 } from "@ant-design/icons";
 import { Avatar, Divider, Image, Layout, Menu } from "antd";
 import React, { useEffect, useState } from "react";
@@ -94,6 +95,9 @@ const LayoutComponent = () => {
 
             <Menu.Item key="/expense" icon={<RiseOutlined />}>
               Expense
+            </Menu.Item>
+            <Menu.Item key="/approvals" icon={<InboxOutlined />}>
+              Approvals
             </Menu.Item>
 
             <Menu.Item key="/fundManager" icon={<BankOutlined />}>

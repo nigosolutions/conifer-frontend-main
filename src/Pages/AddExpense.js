@@ -91,23 +91,12 @@ const AddExpense = () => {
     console.log("search:", value);
   };
 
+  const AddProject = (values) => {
+    console.log(values);
+  };
+
   const ProjectForm = () => (
-    <Form
-      form={projectform}
-      layout="vertical"
-      name="addprojectexpenseform"
-      onValuesChange={(changedValues, AllValues) => {
-        if (changedValues.type) {
-          setType(changedValues.type);
-        }
-        if (changedValues.material) {
-          setMaterial(changedValues.material);
-        }
-      }}
-      initialValues={{
-        modifier: "public",
-      }}
-    >
+    <>
       <Form.Item
         name="type"
         label="Select Type"
@@ -497,25 +486,14 @@ const AddExpense = () => {
           <Form.Item name="remarks" label="Remarks">
             <TextArea />
           </Form.Item>
-          <Row gutter={4} style={{ float: "right" }}>
-            <Col>
-              <Button
-                type="primary"
-                htmlType="submit"
-                onClick={() => setAddPE(false)}
-              >
-                Add
-              </Button>
-            </Col>
-            <Col>
-              <Button type="primary" onClick={() => setAddPE(false)} danger>
-                Cancel
-              </Button>
-            </Col>
-          </Row>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Add
+            </Button>
+          </Form.Item>
         </>
       ) : null}
-    </Form>
+    </>
   );
 
   const MainForm = () => (
@@ -523,6 +501,7 @@ const AddExpense = () => {
       form={mainform}
       layout="vertical"
       name="addexpenseform"
+      onFinish={AddProject}
       initialValues={{
         date: moment(),
         modifier: "public",
@@ -531,7 +510,12 @@ const AddExpense = () => {
         if (changedValues.category) {
           setCategory(changedValues.category);
         }
-
+        if (changedValues.type) {
+          setType(changedValues.type);
+        }
+        if (changedValues.material) {
+          setMaterial(changedValues.material);
+        }
         if (changedValues.project) {
           setProjectSelected(changedValues.project);
         }
