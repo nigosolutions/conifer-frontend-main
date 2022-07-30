@@ -7,12 +7,14 @@ import AddExpense from "./Pages/AddExpense";
 import FundManager from "./Pages/FundManager";
 import Reports from "./Pages/Reports";
 import Approvals from "./Pages/Approvals";
+import NormalLoginForm from "./Pages/Login";
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
+          <Route path="/login" element={<NormalLoginForm />} />
           <Route path="/" element={<Layout />}>
             <Route path="/project" element={<Project />} />
             <Route path="/expense" element={<Expense />} />
@@ -26,5 +28,4 @@ function App() {
     </div>
   );
 }
-
 export default App;
