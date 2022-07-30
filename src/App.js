@@ -8,6 +8,7 @@ import FundManager from "./Pages/FundManager";
 import Reports from "./Pages/Reports";
 import Approvals from "./Pages/Approvals";
 import NormalLoginForm from "./Pages/Login";
+import ManageUsers from "./Pages/ManageUsers";
 
 function App() {
   return (
@@ -16,6 +17,8 @@ function App() {
         <Routes>
           <Route path="/login" element={<NormalLoginForm />} />
           <Route path="/" element={<Layout />}>
+            <Route path="/manageusers" element={<ManageUsers />} />
+
             <Route path="/project" element={<Project />} />
             <Route path="/expense" element={<Expense />} />
             <Route path="/addExpense" element={<AddExpense />} />
