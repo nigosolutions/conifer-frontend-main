@@ -13,7 +13,7 @@ import {
 } from "@ant-design/icons";
 import { Avatar, Divider, Image, Layout, Menu } from "antd";
 import React, { useEffect, useState } from "react";
-
+import logo from "./clogo.png";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 const { Header, Content, Footer, Sider } = Layout;
