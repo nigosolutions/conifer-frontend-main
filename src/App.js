@@ -9,6 +9,7 @@ import Reports from "./Pages/Reports";
 import Approvals from "./Pages/Approvals";
 import NormalLoginForm from "./Pages/Login";
 import ManageUsers from "./Pages/ManageUsers";
+import ResetPassword from "./Pages/ResetPassword";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<NormalLoginForm />} />
+          <Route path="/resetpassword" element={<ResetPassword />} />
           <Route path="/" element={<Layout />}>
             <Route path="/manageusers" element={<ManageUsers />} />
 

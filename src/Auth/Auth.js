@@ -1,12 +1,12 @@
 module.exports = {
   getUser: function () {
-    const user = sessionStorage.getItem("ignis-user");
+    const user = sessionStorage.getItem("conifer-user");
     if (!user || user === "undefined") return null;
     else return JSON.parse(user);
   },
 
   getToken: function () {
-    const token = sessionStorage.getItem("ignis-token");
+    const token = sessionStorage.getItem("conifer-token");
     if (!token || token === "undefined") return null;
     else return token;
   },

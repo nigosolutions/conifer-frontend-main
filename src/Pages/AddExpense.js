@@ -3,17 +3,12 @@ import {
   Row,
   Col,
   Table,
-  Card,
   Button,
   Divider,
-  Checkbox,
   Form,
-  Modal,
-  Radio,
   Input,
   DatePicker,
   Select,
-  AutoComplete,
   Space,
   message,
   InputNumber,
@@ -24,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import api from "../axios.config";
 import Project from "./Project";
+import { getUser } from "../Auth/Auth";
 
 const AddExpense = () => {
   const [selectMaterial, setMaterial] = useState(null);
@@ -92,6 +88,9 @@ const AddExpense = () => {
 
   const SubmitExpense = (values) => {
     console.log(values);
+    values["status"] = "pending";
+    let user = getUser();
+    values["user"] = user.name;
     setLoadingButton(true);
     api
       .post("/expense", { expense: values })
@@ -124,13 +123,13 @@ const AddExpense = () => {
         ]}
       >
         <Select>
-          <Select.Option value="material">Material</Select.Option>
-          <Select.Option value="extrawork">Extra Work</Select.Option>
-          <Select.Option value="subcontract">Sub-Contract</Select.Option>
-          <Select.Option value="other">Other</Select.Option>
+          <Select.Option value="Material">Material</Select.Option>
+          <Select.Option value="Extrawork">Extra Work</Select.Option>
+          <Select.Option value="Subcontract">Sub-Contract</Select.Option>
+          <Select.Option value="Others">Others</Select.Option>
         </Select>
       </Form.Item>
-      {selectType === "material" ? (
+      {selectType === "Material" ? (
         <>
           <Form.Item
             name="material"
@@ -148,7 +147,7 @@ const AddExpense = () => {
               <Select.Option value="aggregate">Aggregate</Select.Option>
               <Select.Option value="sand">Msand/Sand</Select.Option>
               <Select.Option value="solidblock">Solid Block</Select.Option>
-              <Select.Option value="other">Other</Select.Option>
+              <Select.Option value="Others">Others</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item
@@ -389,7 +388,7 @@ const AddExpense = () => {
             </>
           ) : null}
         </>
-      ) : selectType === "extrawork" ? (
+      ) : selectType === "Extrawork" ? (
         <Row gutter={12}>
           <Col span={12}>
             <Form.Item
@@ -425,7 +424,7 @@ const AddExpense = () => {
             </Form.Item>
           </Col>
         </Row>
-      ) : selectType === "subcontract" ? (
+      ) : selectType === "Subcontract" ? (
         <Row gutter={12}>
           <Col span={12}>
             <Form.Item
@@ -474,7 +473,7 @@ const AddExpense = () => {
             </Form.Item>
           </Col>
         </Row>
-      ) : selectType === "other" ? (
+      ) : selectType === "Others" ? (
         <Row>
           <Col span={24}>
             <Form.Item
@@ -521,6 +520,8 @@ const AddExpense = () => {
       initialValues={{
         date: moment(),
         modifier: "public",
+        project: projectSelected ? projectSelected : null,
+        category: selectCategory ? selectCategory : null,
       }}
       onValuesChange={(changedValues, AllValues) => {
         if (changedValues.category) {
@@ -564,14 +565,14 @@ const AddExpense = () => {
             ]}
           >
             <Select>
-              <Select.Option value="project">Project</Select.Option>
-              <Select.Option value="office">Office</Select.Option>
-              <Select.Option value="other">Other</Select.Option>
+              <Select.Option value="Project">Project</Select.Option>
+              <Select.Option value="Office">Office</Select.Option>
+              <Select.Option value="Others">Others</Select.Option>
             </Select>
           </Form.Item>
         </Col>
       </Row>
-      {selectCategory === "project" ? (
+      {selectCategory === "Project" ? (
         <>
           <Form.Item
             name="project"
@@ -619,6 +620,79 @@ const AddExpense = () => {
               )}
             </>
           )}
+        </>
+      ) : null}
+      {selectCategory === "Office" ? (
+        <>
+          <Form.Item
+            name="type"
+            label="Select Type"
+            rules={[
+              {
+                required: true,
+                message: "Please input the Expense Category!",
+              },
+            ]}
+          >
+            <Select>
+              <Select.Option value="Salary">Salary</Select.Option>
+              <Select.Option value="Others">Others</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="amount"
+            label="Total Amount"
+            rules={[
+              {
+                required: true,
+                message: "Please input the total amount!",
+              },
+            ]}
+          >
+            <InputNumber
+              prefix="₹"
+              style={{
+                width: "100%",
+              }}
+            />
+          </Form.Item>
+          <Form.Item name="remarks" label="Remarks">
+            <TextArea />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" loading={loadingButton}>
+              Add
+            </Button>
+          </Form.Item>
+        </>
+      ) : null}
+      {selectCategory === "Others" ? (
+        <>
+          <Form.Item
+            name="amount"
+            label="Total Amount"
+            rules={[
+              {
+                required: true,
+                message: "Please input the total amount!",
+              },
+            ]}
+          >
+            <InputNumber
+              prefix="₹"
+              style={{
+                width: "100%",
+              }}
+            />
+          </Form.Item>
+          <Form.Item name="remarks" label="Remarks">
+            <TextArea />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" loading={loadingButton}>
+              Add
+            </Button>
+          </Form.Item>
         </>
       ) : null}
     </Form>

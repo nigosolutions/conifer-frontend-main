@@ -1,18 +1,41 @@
 import { useState, useEffect } from "react";
-import { Row, Col, Table, Form, Input, Divider, Button, Select } from "antd";
+import {
+  Row,
+  Col,
+  Table,
+  Form,
+  Input,
+  Divider,
+  Button,
+  Select,
+  message,
+} from "antd";
+import api from "../axios.config";
 
 const { Option } = Select;
 const ManageUsers = () => {
   const [form] = Form.useForm();
   const [addUserLoading, setAULoading] = useState(false);
-  const dataSource = [
-    {
-      key: "1",
-      name: "Gokul Shaji",
-      username: "gokulas108",
-      role: "SuperAdmin",
-    },
-  ];
+  const [userLoading, setLoading] = useState(false);
+  const [users, setUsers] = useState([]);
+  useEffect(() => {
+    getAllUsers();
+  }, []);
+  const getAllUsers = () => {
+    setLoading(true);
+    api
+      .get("/getUsers")
+      .then((res) => {
+        setUsers(res.data.message.Items);
+        console.log(res.data.message.Items);
+      })
+      .catch((err) => {
+        message.error("Error in fetching user details!");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   const columns = [
     {
@@ -32,7 +55,27 @@ const ManageUsers = () => {
     },
   ];
 
-  const onFinish = (values) => {};
+  const onFinish = (values) => {
+    setAULoading(true);
+    values["password"] = "123456";
+    console.log("Success:", values);
+    api
+      .post("/register", { userInfo: values })
+      .then((res) => {
+        console.log(res);
+        if (res.status === 200) {
+          message.success(res.data.message);
+          onReset();
+          getAllUsers();
+        }
+      })
+      .catch((err) => {
+        message.error(err.response?.data?.message || "Network Error");
+      })
+      .finally(() => {
+        setAULoading(false);
+      });
+  };
 
   const onReset = (values) => {
     form.resetFields();
@@ -76,9 +119,9 @@ const ManageUsers = () => {
           rules={[{ required: true, message: "Please select the Role!" }]}
         >
           <Select placeholder="Select a role">
-            <Option value="Admin">male</Option>
-            <Option value="Staff">female</Option>
-            <Option value="Engineer">other</Option>
+            <Option value="admin">Admin</Option>
+            <Option value="staff">Staff</Option>
+            <Option value="engineer">Engineer</Option>
           </Select>
         </Form.Item>
 
@@ -107,7 +150,7 @@ const ManageUsers = () => {
           <Divider orientation="left" orientationMargin="0">
             User Details
           </Divider>
-          <Table dataSource={dataSource} columns={columns} />;
+          <Table loading={userLoading} dataSource={users} columns={columns} />;
         </Col>
         <Col span={8}>
           <AddUserForm />

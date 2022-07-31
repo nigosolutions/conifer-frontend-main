@@ -1,16 +1,41 @@
 import React, { useState, useEffect } from "react";
-import { Row, Col, Table, Card, Button, Divider } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
-
+import {
+  Row,
+  Col,
+  Table,
+  Card,
+  Button,
+  Divider,
+  Space,
+  Tooltip,
+  Popconfirm,
+  Typography,
+} from "antd";
+import { DeleteOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
+import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import api from "../axios.config";
+import ViewExpense from "../Components/ViewExpense";
 
 const Expense = () => {
   const [dataSource, setDataSource] = useState([]);
   const [expense, setExpense] = useState([]);
+  const [selectedRecord, setRecord] = useState({});
   useEffect(() => {
     getExpense();
   }, []);
+
+  const deleteExpense = (id) => {
+    return api
+      .delete("/expense", { data: { id } })
+      .then((res) => {
+        getExpense();
+        console.log(id);
+        console.log(res);
+      })
+      .catch((err) => console.log(err))
+      .finally(() => {});
+  };
 
   const columns = [
     {
@@ -18,19 +43,29 @@ const Expense = () => {
       dataIndex: "date",
       key: "date",
       sorter: (a, b) => a.date - b.date,
+      render: (text, record) => {
+        var date = moment(text).format("DD-MM-YYYY");
+        return date;
+      },
     },
     {
-      title: "Profile",
-      dataIndex: "profile",
-      key: "profile",
+      title: "Category",
+      dataIndex: "category",
+      key: "category",
     },
     {
       title: "Type",
       dataIndex: "type",
       key: "type",
+      render: (text, record) =>
+        `${
+          text === "Material"
+            ? `Material (${record.material})`
+            : `${text} ${record.particular ? `(${record.particular})` : ""}`
+        }`,
     },
     {
-      title: "Total Value",
+      title: "Total Value (in ₹)",
       dataIndex: "amount",
       key: "amount",
       sorter: (a, b) => a.amount - b.amount,
@@ -41,9 +76,45 @@ const Expense = () => {
       key: "user",
     },
     {
-      title: "Status",
+      title: "Approval Status",
       dataIndex: "status",
       key: "status",
+    },
+    {
+      title: "Action",
+      dataIndex: "action",
+      key: "action",
+      render: (text, record) => (
+        <Space size="middle">
+          <Tooltip title="View">
+            <a
+              onClick={() => {
+                setRecord(record);
+                setViewExpense(true);
+              }}
+            >
+              <EyeOutlined />
+            </a>
+          </Tooltip>
+
+          <Popconfirm
+            title="Are you sure you want to delete this record ?"
+            okText="Delete"
+            onConfirm={() => deleteExpense(record.id)}
+          >
+            <Typography.Link
+              type="danger"
+              style={{
+                marginLeft: "10px",
+              }}
+            >
+              <Tooltip title="Delete">
+                <DeleteOutlined />
+              </Tooltip>
+            </Typography.Link>
+          </Popconfirm>
+        </Space>
+      ),
     },
   ];
 
@@ -64,6 +135,8 @@ const Expense = () => {
     console.log("Failed:", errorInfo);
   };
 
+  const [viewExpense, setViewExpense] = useState(false);
+
   const [visible, setVisible] = useState(false);
   const onCreate = (values) => {
     console.log("Received values of form: ", values);
@@ -72,6 +145,11 @@ const Expense = () => {
 
   return (
     <div>
+      <ViewExpense
+        data={selectedRecord}
+        visible={viewExpense}
+        setVisible={setViewExpense}
+      />
       <Row>
         <Col span={20}>
           <Divider orientation="left" orientationMargin="0">

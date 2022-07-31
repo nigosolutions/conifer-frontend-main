@@ -1,38 +1,31 @@
-import { Form, Input, Button, Checkbox, message, Image, Row, Col } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import api from "../axios.config";
-import logo from "../Components/clogo.png";
-
-import { setUserSession } from "../Auth/Auth";
+import { Form, Input, Button, message, Alert, Row, Col, Image } from "antd";
+import { LockOutlined } from "@ant-design/icons";
 import { useState } from "react";
+import { getUser } from "../Auth/Auth";
 import { useNavigate } from "react-router-dom";
+import logo from "../Components/clogo.png";
+import api from "../axios.config";
 
-export default function NormalLoginForm() {
+export default function ResetPassword() {
   let navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
   const onFinish = (values) => {
     setLoading(true);
     console.log("Received values of form: ", values);
-    let { username, password } = { ...values };
-    username = username.trim();
-    password = password.trim();
+    let { new_password, confirm_password } = { ...values };
+    new_password = new_password.trim();
+    confirm_password = confirm_password.trim();
+    let user = getUser();
     api
-      .post("/login", { userInfo: { username, password } })
+      .post("/reset", { user, new_password, confirm_password })
       .then((res) => {
         setLoading(false);
         console.log(res);
-        if (res.status === 200) {
-          const user = res.data.message.user;
-          const token = res.data.message.token;
-          setUserSession({ user, token });
-
-          if (user.first_login) {
-            navigate("/resetpassword");
-          } else {
-            navigate("/");
-          }
-        }
+        message.success(
+          "Password changed successfully, Login with new credentials"
+        );
+        navigate("/login");
       })
       .catch((err) => {
         setLoading(false);
@@ -58,30 +51,43 @@ export default function NormalLoginForm() {
         }}
         span={5}
       >
+        <Alert
+          message={
+            <>
+              This is your first login, please set
+              <br />
+              your new password.
+            </>
+          }
+          type="warning"
+        />
         <Image src={logo} preview={false} />
         <Form
           name="normal_login"
+          className="login-form"
+          autoComplete="off"
           initialValues={{
             remember: true,
           }}
           onFinish={onFinish}
         >
           <Form.Item
-            name="username"
+            name="new_password"
             rules={[
               {
                 required: true,
-                message: "Please input your Username",
+                message: "Please input your password!",
               },
             ]}
           >
             <Input
-              prefix={<UserOutlined className="site-form-item-icon" />}
-              placeholder="Username"
+              type="password"
+              prefix={<LockOutlined className="site-form-item-icon" />}
+              placeholder="New Password"
             />
           </Form.Item>
           <Form.Item
-            name="password"
+            name="confirm_password"
             rules={[
               {
                 required: true,
@@ -92,23 +98,13 @@ export default function NormalLoginForm() {
             <Input
               prefix={<LockOutlined className="site-form-item-icon" />}
               type="password"
-              placeholder="Password"
+              placeholder="Confirm Password"
             />
-          </Form.Item>
-          <Form.Item>
-            <a className="login-form-forgot" href="">
-              Forgot password
-            </a>
-            <br />
-            <br />
-            <Form.Item name="remember" valuePropName="checked" noStyle>
-              <Checkbox>Remember me</Checkbox>
-            </Form.Item>
           </Form.Item>
 
           <Form.Item>
             <Button type="primary" htmlType="submit" block loading={loading}>
-              Log in
+              Change Password
             </Button>
           </Form.Item>
         </Form>
