@@ -54,6 +54,8 @@ const PendingExpense = () => {
       title: "Category",
       dataIndex: "category",
       key: "category",
+      render: (text, record) =>
+        `${text === "Project" ? `Project (${record.projectname})` : `${text}`}`,
     },
     {
       title: "Type",
