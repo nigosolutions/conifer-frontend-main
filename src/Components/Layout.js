@@ -106,7 +106,7 @@ const LayoutComponent = () => {
             </Menu.SubMenu>
 
             <Menu.Item key="/approvals" icon={<InboxOutlined />}>
-              <Badge offset={[50, 6]} count={5}>
+              <Badge offset={[50, 6]} count={12}>
                 Approvals{" "}
               </Badge>
             </Menu.Item>
