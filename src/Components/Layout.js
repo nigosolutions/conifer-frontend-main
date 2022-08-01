@@ -10,8 +10,10 @@ import {
   LogoutOutlined,
   EditOutlined,
   InboxOutlined,
+  WalletOutlined,
+  GroupOutlined,
 } from "@ant-design/icons";
-import { Avatar, Divider, Image, Layout, Menu } from "antd";
+import { Avatar, Badge, Divider, Image, Layout, Menu, Space } from "antd";
 import React, { useEffect, useState } from "react";
 import logo from "./clogo.png";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -91,12 +93,22 @@ const LayoutComponent = () => {
             <Menu.Item key="/project" icon={<ProjectOutlined />}>
               Projects
             </Menu.Item>
+            <Menu.SubMenu key="expense" title="Expense" icon={<RiseOutlined />}>
+              <Menu.Item key="/addexpense" icon={<PlusOutlined />}>
+                Add Expense
+              </Menu.Item>
+              <Menu.Item key="/expense" icon={<WalletOutlined />}>
+                My Expense
+              </Menu.Item>
+              <Menu.Item key="/totalexpense" icon={<GroupOutlined />}>
+                Total Expense
+              </Menu.Item>
+            </Menu.SubMenu>
 
-            <Menu.Item key="/expense" icon={<RiseOutlined />}>
-              Expense
-            </Menu.Item>
             <Menu.Item key="/approvals" icon={<InboxOutlined />}>
-              Approvals
+              <Badge offset={[50, 6]} count={5}>
+                Approvals{" "}
+              </Badge>
             </Menu.Item>
 
             <Menu.Item key="/fundManager" icon={<BankOutlined />}>
