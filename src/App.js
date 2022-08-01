@@ -20,7 +20,6 @@ function App() {
           <Route path="/resetpassword" element={<ResetPassword />} />
           <Route path="/" element={<Layout />}>
             <Route path="/manageusers" element={<ManageUsers />} />
-
             <Route path="/project" element={<Project />} />
             <Route path="/expense" element={<Expense />} />
             <Route path="/addExpense" element={<AddExpense />} />
