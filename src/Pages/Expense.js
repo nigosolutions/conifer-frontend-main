@@ -10,13 +10,15 @@ import {
 	Tooltip,
 	Popconfirm,
 	Typography,
+	Tabs,
 } from "antd";
 import { DeleteOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import api from "../axios.config";
+const { TabPane } = Tabs;
 
-const Expense = () => {
+const PendingExpense = () => {
 	const [dataSource, setDataSource] = useState([]);
 	const [expenseLoading, setExpenseLoading] = useState(false);
 	const [expense, setExpense] = useState([]);
@@ -151,7 +153,7 @@ const Expense = () => {
 			<Row>
 				<Col span={20}>
 					<Divider orientation="left" orientationMargin="0">
-						Expenses
+						Pending Expenses
 					</Divider>
 					<Button
 						icon={<PlusOutlined />}
@@ -222,4 +224,23 @@ const Expense = () => {
 		</div>
 	);
 };
-export default Expense;
+
+const onChange = (key) => {
+	console.log(key);
+};
+
+const OverallExpense = () => (
+	<Tabs defaultActiveKey="1" onChange={onChange}>
+		<TabPane tab=" Pending" key="1">
+			<PendingExpense />
+		</TabPane>
+		<TabPane tab="Approved" key="2">
+			Content of Tab Pane 2
+		</TabPane>
+		<TabPane tab="Rejected" key="3">
+			Content of Tab Pane 3
+		</TabPane>
+	</Tabs>
+);
+
+export default OverallExpense;
