@@ -10,6 +10,7 @@ import Approvals from "./Pages/Approvals";
 import NormalLoginForm from "./Pages/Login";
 import ManageUsers from "./Pages/ManageUsers";
 import ResetPassword from "./Pages/ResetPassword";
+import TotalExpense from "./Pages/TotalExpense";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             <Route path="/fundmanager" element={<FundManager />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/approvals" element={<Approvals />} />
+            <Route path="/totalExpense" element={<TotalExpense />} />
           </Route>
         </Routes>
       </BrowserRouter>

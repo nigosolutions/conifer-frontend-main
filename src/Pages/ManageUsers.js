@@ -9,8 +9,12 @@ import {
   Button,
   Select,
   message,
+  Tooltip,
+  Space,
+  Popconfirm,
 } from "antd";
 import api from "../axios.config";
+import { CloseOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
 const ManageUsers = () => {
@@ -36,6 +40,19 @@ const ManageUsers = () => {
         setLoading(false);
       });
   };
+  const ResetPassword = (username) => {
+    api
+      .post("/resetPassword", { username })
+      .then((res) => {
+        console.log(res);
+        if (res.status === 200) {
+          message.success("Password Reset Successful!");
+        }
+      })
+      .catch((err) => {
+        message.error(err.response?.data?.message || "Network Error");
+      });
+  };
 
   const columns = [
     {
@@ -52,6 +69,31 @@ const ManageUsers = () => {
       title: "Role",
       dataIndex: "role",
       key: "role",
+    },
+    {
+      title: "Action",
+      dataIndex: "action",
+      key: "action",
+      render: (text, record) => (
+        <Space size="middle">
+          <Tooltip title="Reset Password">
+            <a onClick={() => ResetPassword(record.username)}>
+              <Space>Reset Password</Space>
+            </a>
+          </Tooltip>
+
+          <Popconfirm
+            title="Are you sure you want to remove this User?"
+            okText="Remove"
+          >
+            <Tooltip title="Remove User">
+              <a style={{ color: "red" }}>
+                <Space>Remove</Space>
+              </a>
+            </Tooltip>
+          </Popconfirm>
+        </Space>
+      ),
     },
   ];
 
