@@ -1,17 +1,17 @@
 import {
-  RiseOutlined,
-  ProjectOutlined,
-  BankOutlined,
-  PlusOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  FormOutlined,
-  UserOutlined,
-  LogoutOutlined,
-  EditOutlined,
-  InboxOutlined,
-  WalletOutlined,
-  GroupOutlined,
+	RiseOutlined,
+	ProjectOutlined,
+	BankOutlined,
+	PlusOutlined,
+	MenuFoldOutlined,
+	MenuUnfoldOutlined,
+	FormOutlined,
+	UserOutlined,
+	LogoutOutlined,
+	EditOutlined,
+	InboxOutlined,
+	WalletOutlined,
+	GroupOutlined,
 } from "@ant-design/icons";
 import { Avatar, Badge, Divider, Image, Layout, Menu, Space } from "antd";
 import React, { useEffect, useState } from "react";
@@ -23,152 +23,153 @@ const { Header, Content, Footer, Sider } = Layout;
 React.useLayoutEffect = React.useEffect;
 
 const LayoutComponent = () => {
-  let navigate = useNavigate();
-  let location = useLocation();
+	let navigate = useNavigate();
+	let location = useLocation();
 
-  const [pathName, setPathName] = useState(null);
-  const [collapsed, setCollapsed] = useState(true);
-  const [showButton, setShowButton] = useState(false);
+	const [pathName, setPathName] = useState(null);
+	const [collapsed, setCollapsed] = useState(true);
+	const [showButton, setShowButton] = useState(false);
 
-  useEffect(() => {
-    if (location.pathname === "/") navigate("/project");
-    else setPathName(location.pathname);
-    console.log(pathName);
-  }, [location.pathname]);
+	useEffect(() => {
+		if (location.pathname === "/") navigate("/project");
+		else setPathName(location.pathname);
+		console.log(pathName);
+	}, [location.pathname]);
 
-  return (
-    <div>
-      <Layout>
-        <div
-          style={{
-            zIndex: 999,
-            top: 3,
-            left: 8,
-            height: "100vh",
-            position: "fixed",
-            display: showButton ? "inline-block" : "none",
-            color: "black",
-            cursor: "pointer",
-            fontSize: 18,
-          }}
-          onClick={() => setCollapsed(!collapsed)}
-        >
-          {collapsed ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />}
-        </div>
-        {showButton && (
-          <Header
-            style={{
-              position: "absolute",
-              display: "none",
-            }}
-          >
-            <Menu theme="light" mode="horizontal"></Menu>
-          </Header>
-        )}
-        <Sider
-          theme="light"
-          style={{
-            overflow: "auto",
-            height: "100%",
-            position: "fixed",
-            left: 0,
-            zIndex: 998,
-          }}
-          breakpoint="lg"
-          collapsed={collapsed}
-          onCollapse={(val) => setCollapsed(val)}
-          collapsedWidth={0}
-          onBreakpoint={(val) => setShowButton(val)}
-        >
-          <div className="logo">
-            <Image src={logo} preview={false} />
-          </div>
-          <Menu
-            theme="light"
-            mode="inline"
-            defaultSelectedKeys={pathName}
-            selectedKeys={[pathName]}
-            onClick={(item) => navigate(item.key)}
-          >
-            <Menu.Item key="/project" icon={<ProjectOutlined />}>
-              Projects
-            </Menu.Item>
-            <Menu.SubMenu key="expense" title="Expense" icon={<RiseOutlined />}>
-              <Menu.Item key="/addexpense" icon={<PlusOutlined />}>
-                Add Expense
-              </Menu.Item>
-              <Menu.Item key="/expense" icon={<WalletOutlined />}>
-                My Expense
-              </Menu.Item>
-              <Menu.Item key="/totalexpense" icon={<GroupOutlined />}>
-                Total Expense
-              </Menu.Item>
-            </Menu.SubMenu>
+	return (
+		<div>
+			<Layout>
+				<div
+					style={{
+						zIndex: 999,
+						top: 3,
+						left: 8,
+						height: "100vh",
+						position: "fixed",
+						display: showButton ? "inline-block" : "none",
+						color: "black",
+						cursor: "pointer",
+						fontSize: 18,
+					}}
+					onClick={() => setCollapsed(!collapsed)}
+				>
+					{collapsed ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />}
+				</div>
+				{showButton && (
+					<Header
+						style={{
+							position: "absolute",
+							display: "none",
+						}}
+					>
+						<Menu theme="light" mode="horizontal"></Menu>
+					</Header>
+				)}
+				<Sider
+					theme="light"
+					style={{
+						overflow: "auto",
+						height: "100%",
+						position: "fixed",
+						left: 0,
+						zIndex: 998,
+					}}
+					breakpoint="lg"
+					collapsed={collapsed}
+					onCollapse={(val) => setCollapsed(val)}
+					collapsedWidth={0}
+					onBreakpoint={(val) => setShowButton(val)}
+				>
+					<div className="logo">
+						<Image src={logo} preview={false} />
+					</div>
+					<Menu
+						theme="light"
+						mode="inline"
+						defaultSelectedKeys={pathName}
+						selectedKeys={[pathName]}
+						onClick={(item) => navigate(item.key)}
+					>
+						<Menu.Item key="/project" icon={<ProjectOutlined />}>
+							Projects
+						</Menu.Item>
+						<Menu.SubMenu key="expense" title="Expense" icon={<RiseOutlined />}>
+							<Menu.Item key="/expense" icon={<WalletOutlined />}>
+								My Expense
+							</Menu.Item>
+							<Menu.Item key="/addexpense" icon={<PlusOutlined />}>
+								Add Expense
+							</Menu.Item>
 
-            <Menu.Item key="/approvals" icon={<InboxOutlined />}>
-              <Badge offset={[50, 6]} count={12}>
-                Approvals{" "}
-              </Badge>
-            </Menu.Item>
+							<Menu.Item key="/totalexpense" icon={<GroupOutlined />}>
+								Total Expense
+							</Menu.Item>
+						</Menu.SubMenu>
 
-            <Menu.Item key="/fundManager" icon={<BankOutlined />}>
-              Fund Manager
-            </Menu.Item>
-            <Menu.Item key="/reports" icon={<FormOutlined />}>
-              Reports
-            </Menu.Item>
+						<Menu.Item key="/approvals" icon={<InboxOutlined />}>
+							<Badge offset={[50, 6]} count={12}>
+								Approvals{" "}
+							</Badge>
+						</Menu.Item>
 
-            <Divider />
+						<Menu.Item key="/fundManager" icon={<BankOutlined />}>
+							Fund Manager
+						</Menu.Item>
+						<Menu.Item key="/reports" icon={<FormOutlined />}>
+							Reports
+						</Menu.Item>
 
-            <Menu.SubMenu
-              style={{ position: "absolute", bottom: 70 }}
-              key="user"
-              title="User"
-              icon={<UserOutlined />}
-            >
-              <Menu.Item key="changepassword" icon={<EditOutlined />}>
-                Change Password
-              </Menu.Item>
-            </Menu.SubMenu>
-            <Menu.Item
-              style={{ position: "absolute", bottom: 20 }}
-              key="logout"
-              icon={<LogoutOutlined />}
-            >
-              Signout
-            </Menu.Item>
-          </Menu>
-        </Sider>
+						<Divider />
 
-        <Layout
-          className="site-layout sidebar"
-          style={{
-            marginLeft: showButton ? 0 : 200,
-            marginTop: 0,
-          }}
-        >
-          <Content
-            style={{
-              borderRadius: showButton ? "0" : "2px 0 0 0",
-              overflow: "initial",
-            }}
-          >
-            <div
-              className="site-layout-background"
-              style={{ backgroundColor: "#F7F7F7", padding: 15 }}
-            >
-              <div style={{ backgroundColor: "#FFFF", padding: 24 }}>
-                <Outlet />
-              </div>
-            </div>
-          </Content>
-          <Footer style={{ textAlign: "center", backgroundColor: "#F7F7F7" }}>
-            CONIFER GROUP ©2022
-          </Footer>
-        </Layout>
-      </Layout>
-    </div>
-  );
+						<Menu.SubMenu
+							style={{ position: "absolute", bottom: 70 }}
+							key="user"
+							title="User"
+							icon={<UserOutlined />}
+						>
+							<Menu.Item key="changepassword" icon={<EditOutlined />}>
+								Change Password
+							</Menu.Item>
+						</Menu.SubMenu>
+						<Menu.Item
+							style={{ position: "absolute", bottom: 20 }}
+							key="logout"
+							icon={<LogoutOutlined />}
+						>
+							Signout
+						</Menu.Item>
+					</Menu>
+				</Sider>
+
+				<Layout
+					className="site-layout sidebar"
+					style={{
+						marginLeft: showButton ? 0 : 200,
+						marginTop: 0,
+					}}
+				>
+					<Content
+						style={{
+							borderRadius: showButton ? "0" : "2px 0 0 0",
+							overflow: "initial",
+						}}
+					>
+						<div
+							className="site-layout-background"
+							style={{ backgroundColor: "#F7F7F7", padding: 15 }}
+						>
+							<div style={{ backgroundColor: "#FFFF", padding: 24 }}>
+								<Outlet />
+							</div>
+						</div>
+					</Content>
+					<Footer style={{ textAlign: "center", backgroundColor: "#F7F7F7" }}>
+						CONIFER GROUP ©2022
+					</Footer>
+				</Layout>
+			</Layout>
+		</div>
+	);
 };
 
 export default LayoutComponent;

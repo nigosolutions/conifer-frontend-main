@@ -17,7 +17,7 @@ const ViewExpense = ({ title, visible, setVisible, data }) => {
 		>
 			<Row>
 				{Object.keys(data).map((attr) =>
-					attr === "project" || attr === "id" ? null : (
+					attr === "project" || attr === "id" || attr === "username" ? null : (
 						<Col span={12}>
 							<b>{capitalizeFirstLetter(attr)}</b> :{" "}
 							{attr === "date"
