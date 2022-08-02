@@ -80,37 +80,49 @@ const PendingExpense = (props) => {
 			key: "amount",
 			sorter: (a, b) => a.amount - b.amount,
 		},
-
 		{
 			title: "Approval Status",
 			dataIndex: "status",
 			key: "status",
 		},
-		{
-			title: "Action",
-			dataIndex: "action",
-			key: "action",
-			render: (text, record) => (
-				<Space size="middle">
-					<Popconfirm
-						title="Are you sure you want to delete this record ?"
-						okText="Delete"
-						onConfirm={() => deleteExpense(record.id)}
-					>
-						<Typography.Link
-							type="danger"
-							style={{
-								marginLeft: "10px",
-							}}
-						>
-							<Tooltip title="Delete">
-								<DeleteOutlined />
-							</Tooltip>
-						</Typography.Link>
-					</Popconfirm>
-				</Space>
-			),
-		},
+		...(props.status === "pending"
+			? [
+					{
+						title: "Action",
+						dataIndex: "action",
+						key: "action",
+						render: (text, record) => (
+							<Space size="middle">
+								<Popconfirm
+									title="Are you sure you want to delete this record ?"
+									okText="Delete"
+									onConfirm={() => deleteExpense(record.id)}
+								>
+									<Typography.Link
+										type="danger"
+										style={{
+											marginLeft: "10px",
+										}}
+									>
+										<Tooltip title="Delete">
+											<DeleteOutlined />
+										</Tooltip>
+									</Typography.Link>
+								</Popconfirm>
+							</Space>
+						),
+					},
+			  ]
+			: []),
+		...(props.status === "rejected"
+			? [
+					{
+						title: "Reason",
+						dataIndex: "reason",
+						key: "reason",
+					},
+			  ]
+			: []),
 	];
 
 	const capitalizeFirstLetter = (string) => {
