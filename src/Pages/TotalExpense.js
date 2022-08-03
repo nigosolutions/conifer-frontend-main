@@ -1,144 +1,240 @@
 import React, { useState, useEffect } from "react";
 import {
-	Row,
-	Col,
-	Table,
-	Card,
-	Button,
-	Divider,
-	Space,
-	Tooltip,
-	Popconfirm,
-	Typography,
-	Tabs,
-	Tag,
+  Row,
+  Col,
+  Table,
+  Card,
+  Button,
+  Divider,
+  Space,
+  Tooltip,
+  Popconfirm,
+  Typography,
+  Tabs,
+  Tag,
+  Dropdown,
+  Menu,
+  message,
 } from "antd";
-import { DeleteOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  DownOutlined,
+  EyeOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import api from "../axios.config";
 import ViewExpense from "../Components/ViewExpense";
+import Column from "antd/lib/table/Column";
+var XLSX = require("xlsx");
+const { jsPDF } = require("jspdf");
+const { autoTable } = require("jspdf-autotable");
 const TotalExpense = () => {
-	const [dataSource, setDataSource] = useState([]);
-	const [expenseLoading, setExpenseLoading] = useState(false);
-	const [expense, setExpense] = useState([]);
-	const [selectedRecord, setRecord] = useState({});
-	useEffect(() => {
-		getExpense();
-	}, []);
+  const [dataSource, setDataSource] = useState([]);
+  const [expenseLoading, setExpenseLoading] = useState(false);
+  const [expense, setExpense] = useState([]);
+  const [selectedRecord, setRecord] = useState({});
+  useEffect(() => {
+    getExpense();
+  }, []);
 
-	const deleteExpense = (id) => {
-		return api
-			.delete("/expense", { data: { id } })
-			.then((res) => {
-				getExpense();
-				console.log(id);
-				console.log(res);
-			})
-			.catch((err) => console.log(err))
-			.finally(() => {});
-	};
+  const exportPDF = () => {
+    const unit = "pt";
+    const size = "A4"; // Use A1, A2, A3 or A4
+    const orientation = "portrait"; // portrait or landscape
 
-	const columns = [
-		{
-			title: "Date",
-			dataIndex: "date",
-			key: "date",
-			sorter: (a, b) => a.date - b.date,
-			render: (text, record) => {
-				var date = moment(text).format("DD-MM-YYYY");
-				return date;
-			},
-		},
-		{
-			title: "Category",
-			dataIndex: "category",
-			key: "category",
-			render: (text, record) =>
-				`${text === "Project" ? `Project (${record.projectname})` : `${text}`}`,
-		},
-		{
-			title: "Type",
-			dataIndex: "type",
-			key: "type",
-			render: (text, record) =>
-				`${
-					text === "Material"
-						? `Material (${record.material})`
-						: text === undefined
-						? ""
-						: `${text} ${record.particular ? `(${record.particular})` : ""}`
-				}`,
-		},
-		{
-			title: "Total Value (in ₹)",
-			dataIndex: "amount",
-			key: "amount",
-			sorter: (a, b) => a.amount - b.amount,
-		},
+    const marginLeft = 40;
+    const doc = new jsPDF(orientation, unit, size);
 
-		{
-			title: "User",
-			dataIndex: "user",
-			key: "user",
-		},
-	];
+    doc.setFontSize(15);
 
-	const capitalizeFirstLetter = (string) => {
-		return string.charAt(0).toUpperCase() + string.slice(1);
-	};
+    const title = "Total Expenses";
+    const headers = [["Date", "Category", "Type", "Total Amount", "Added By"]];
 
-	const getExpense = () => {
-		setExpenseLoading(true);
-		api
-			.get("/expense", {
-				params: {
-					status: "approved",
-				},
-			})
-			.then((res) => {
-				console.log(res);
-				setExpense(res.data.message.Items);
-			})
-			.finally(() => {
-				setExpenseLoading(false);
-			});
-	};
+    const data = expense.map((elt) => [
+      elt.date,
+      elt.category,
+      elt.type,
+      elt.amount,
+      elt.user,
+    ]);
 
-	const onFinish = (values) => {
-		console.log("Success:", values);
-	};
+    let content = {
+      startY: 50,
+      head: headers,
+      body: data,
+    };
 
-	const onFinishFailed = (errorInfo) => {
-		console.log("Failed:", errorInfo);
-	};
+    doc.text(title, marginLeft, 40);
+    doc.autoTable(content);
+    doc.save("TotalExpenses.pdf");
+  };
 
-	const [viewExpense, setViewExpense] = useState(false);
+  const handleOnExport = () => {
+    console.log(expense);
+    var wb = XLSX.utils.book_new(),
+      ws = XLSX.utils.json_to_sheet(expense);
 
-	const [visible, setVisible] = useState(false);
-	const onCreate = (values) => {
-		console.log("Received values of form: ", values);
-		setVisible(false);
-	};
+    XLSX.utils.book_append_sheet(wb, ws, "TotalExpense");
+    XLSX.writeFile(wb, "TotalExpense.xlsx");
+  };
 
-	return (
-		<Col span={24}>
-			<Divider orientation="left" orientationMargin="0">
-				Total Expenses
-			</Divider>
-			<Table
-				dataSource={expense}
-				rowKey="id"
-				expandable={{
-					expandedRowRender: (record) => <ViewExpense record={record} />,
-					rowExpandable: (record) => record.id !== "Not Expandable",
-					expandRowByClick: true,
-				}}
-				columns={columns}
-				loading={expenseLoading}
-			/>
-		</Col>
-	);
+  const deleteExpense = (id) => {
+    return api
+      .delete("/expense", { data: { id } })
+      .then((res) => {
+        getExpense();
+        console.log(id);
+        console.log(res);
+      })
+      .catch((err) => console.log(err))
+      .finally(() => {});
+  };
+
+  const columns = [
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      sorter: (a, b) => a.date - b.date,
+      render: (text, record) => {
+        var date = moment(text).format("DD-MM-YYYY");
+        return date;
+      },
+    },
+    {
+      title: "Category",
+      dataIndex: "category",
+      key: "category",
+      render: (text, record) =>
+        `${text === "Project" ? `Project (${record.projectname})` : `${text}`}`,
+    },
+    {
+      title: "Type",
+      dataIndex: "type",
+      key: "type",
+      render: (text, record) =>
+        `${
+          text === "Material"
+            ? `Material (${record.material})`
+            : text === undefined
+            ? ""
+            : `${text} ${record.particular ? `(${record.particular})` : ""}`
+        }`,
+    },
+    {
+      title: "Total Value (in ₹)",
+      dataIndex: "amount",
+      key: "amount",
+      sorter: (a, b) => a.amount - b.amount,
+    },
+
+    {
+      title: "User",
+      dataIndex: "user",
+      key: "user",
+    },
+  ];
+
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
+  const getExpense = () => {
+    setExpenseLoading(true);
+    api
+      .get("/expense", {
+        params: {
+          status: "approved",
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        setExpense(res.data.message.Items);
+      })
+      .finally(() => {
+        setExpenseLoading(false);
+      });
+  };
+
+  const onFinish = (values) => {
+    console.log("Success:", values);
+  };
+
+  const onFinishFailed = (errorInfo) => {
+    console.log("Failed:", errorInfo);
+  };
+
+  const [viewExpense, setViewExpense] = useState(false);
+
+  const [visible, setVisible] = useState(false);
+  const onCreate = (values) => {
+    console.log("Received values of form: ", values);
+    setVisible(false);
+  };
+  const onClick = ({ key }) => {
+    {
+      key === "1" ? (
+        <>
+          {message.success("XLSX Export Successful!")}
+          {handleOnExport()}
+        </>
+      ) : (
+        <>
+          {message.success("PDF Export Successful!")}
+          {exportPDF()}
+        </>
+      );
+    }
+  };
+
+  const menu = (
+    <Menu
+      onClick={onClick}
+      items={[
+        {
+          label: "Export to XLSX",
+          key: "1",
+        },
+        {
+          label: "Export to PDF",
+          key: "2",
+        },
+      ]}
+    />
+  );
+
+  return (
+    <Col span={24}>
+      <Divider orientation="left" orientationMargin="0">
+        Total Expenses
+      </Divider>
+      <Dropdown overlay={menu}>
+        <Button onClick={(e) => e.preventDefault()}>
+          <Space>
+            Export
+            <DownOutlined />
+          </Space>
+        </Button>
+      </Dropdown>
+
+      <br />
+      <br />
+
+      <Table
+        dataSource={expense}
+        rowKey="id"
+        expandable={{
+          expandedRowRender: (record) => <ViewExpense record={record} />,
+          rowExpandable: (record) => record.id !== "Not Expandable",
+          expandRowByClick: true,
+        }}
+        columns={columns}
+        loading={expenseLoading}
+      />
+    </Col>
+  );
 };
 
 export default TotalExpense;
