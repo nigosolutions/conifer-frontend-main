@@ -25,21 +25,16 @@ import {
 } from "@ant-design/icons";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import ApiTable from "../Components/ApiTable";
 import api from "../axios.config";
 import ViewExpense from "../Components/ViewExpense";
 
 const Approvals = () => {
-	const [dataSource, setDataSource] = useState([]);
-	const [expenseLoading, setExpenseLoading] = useState(false);
+	const [apiTableFunctions, setATF] = useState(null);
 	const [approveLoading, setApproveLoading] = useState("");
 	const [rejectLoading, setRejectLoading] = useState("");
-	const [expense, setExpense] = useState([]);
-	const [selectedRecord, setRecord] = useState({});
 	const [rejectReason, setRejectReason] = useState("");
 
-	useEffect(() => {
-		getExpense();
-	}, []);
 	const approveExpense = (id) => {
 		setApproveLoading(id);
 		api
@@ -47,7 +42,7 @@ const Approvals = () => {
 			.then((res) => {
 				console.log(res);
 				message.success("Expense has been Approved!");
-				getExpense();
+				apiTableFunctions.deleteRecord(id);
 			})
 			.finally(() => {
 				setApproveLoading("");
@@ -60,23 +55,12 @@ const Approvals = () => {
 			.then((res) => {
 				console.log(res);
 				message.error("Expense has been Rejected!");
-				getExpense();
+				// getExpense();
+				apiTableFunctions.deleteRecord(id);
 			})
 			.finally(() => {
 				setRejectLoading("");
 			});
-	};
-
-	const deleteExpense = (id) => {
-		return api
-			.delete("/expense", { data: { id } })
-			.then((res) => {
-				getExpense();
-				console.log(id);
-				console.log(res);
-			})
-			.catch((err) => console.log(err))
-			.finally(() => {});
 	};
 
 	const columns = [
@@ -186,45 +170,6 @@ const Approvals = () => {
 		},
 	];
 
-	const capitalizeFirstLetter = (string) => {
-		return string.charAt(0).toUpperCase() + string.slice(1);
-	};
-
-	const getExpense = () => {
-		setExpenseLoading(true);
-		api
-			.get("/expense", {
-				params: {
-					status: "pending",
-				},
-			})
-			.then((res) => {
-				console.log(res);
-				setExpense(res.data.message.Items);
-			})
-			.finally(() => {
-				setExpenseLoading(false);
-			});
-	};
-
-	let navigate = useNavigate();
-
-	const onFinish = (values) => {
-		console.log("Success:", values);
-	};
-
-	const onFinishFailed = (errorInfo) => {
-		console.log("Failed:", errorInfo);
-	};
-
-	const [viewExpense, setViewExpense] = useState(false);
-
-	const [visible, setVisible] = useState(false);
-	const onCreate = (values) => {
-		console.log("Received values of form: ", values);
-		setVisible(false);
-	};
-
 	return (
 		<div>
 			<Row>
@@ -233,14 +178,18 @@ const Approvals = () => {
 						Approvals
 					</Divider>
 
-					<Table
-						dataSource={expense}
+					<ApiTable
+						apiURL="/expense"
+						apiData={{ status: "pending" }}
+						columns={columns}
 						rowKey="id"
+						apiTableFunctions={setATF}
+						exportType="expense"
 						expandable={{
 							expandedRowRender: (record) => <ViewExpense record={record} />,
+							rowExpandable: (record) => record.id !== "Not Expandable",
+							expandRowByClick: true,
 						}}
-						columns={columns}
-						loading={expenseLoading}
 					/>
 				</Col>
 			</Row>

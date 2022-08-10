@@ -21,93 +21,22 @@ import ViewExpense from "../Components/ViewExpense";
 import ApiTable from "../Components/ApiTable";
 const { TabPane } = Tabs;
 
-const PendingExpense = (props) => {
-	const [dataSource, setDataSource] = useState([]);
-	const [expenseLoading, setExpenseLoading] = useState(false);
-	const [expense, setExpense] = useState([]);
-	const [selectedRecord, setRecord] = useState({});
-	useEffect(() => {
-		getExpense();
-	}, []);
+const OverallExpense = () => {
+	const [status, setStatus] = useState("pending");
+	const [apiTableFunctions, setATF] = useState(null);
+
+	const onChange = (key) => {
+		setStatus(key);
+	};
 
 	const deleteExpense = (id) => {
 		return api
 			.delete("/expense", { data: { id } })
 			.then((res) => {
-				getExpense();
-				console.log(id);
-				console.log(res);
+				apiTableFunctions.deleteRecord(id);
 			})
 			.catch((err) => console.log(err))
 			.finally(() => {});
-	};
-
-	const capitalizeFirstLetter = (string) => {
-		return string.charAt(0).toUpperCase() + string.slice(1);
-	};
-
-	const getExpense = () => {
-		setExpenseLoading(true);
-		api
-			.get("/expense", {
-				params: {
-					status: props.status,
-				},
-			})
-			.then((res) => {
-				console.log(res);
-				setExpense(res.data.message.Items);
-			})
-			.finally(() => {
-				setExpenseLoading(false);
-			});
-	};
-
-	const onFinish = (values) => {
-		console.log("Success:", values);
-	};
-
-	const onFinishFailed = (errorInfo) => {
-		console.log("Failed:", errorInfo);
-	};
-
-	const [viewExpense, setViewExpense] = useState(false);
-
-	const [visible, setVisible] = useState(false);
-	const onCreate = (values) => {
-		console.log("Received values of form: ", values);
-		setVisible(false);
-	};
-
-	return "hello";
-	// <Table
-	// 	dataSource={expense}
-	// 	rowKey="id"
-	// 	expandable={{
-	// 		expandedRowRender: (record) => <ViewExpense record={record} />,
-	// 		rowExpandable: (record) => record.id !== "Not Expandable",
-	// 		expandRowByClick: true,
-	// 	}}
-	// 	columns={columns}
-	// 	loading={expenseLoading}
-	// />
-};
-
-const onChange = (key) => {
-	console.log(key);
-};
-
-const OverallExpense = ({ status = "rejected" }) => {
-	const deleteExpense = (id) => {
-		// return api
-		// 	.delete("/expense", { data: { id } })
-		// 	.then((res) => {
-		// 		getExpense();
-		// 		console.log(id);
-		// 		console.log(res);
-		// 	})
-		// 	.catch((err) => console.log(err))
-		// 	.finally(() => {});
 	};
 
 	let navigate = useNavigate();
@@ -164,7 +93,7 @@ const OverallExpense = ({ status = "rejected" }) => {
 					}
 					key={text}
 				>
-					{text.toUpperCase()}
+					{text?.toUpperCase()}
 				</Tag>
 			),
 		},
@@ -233,24 +162,31 @@ const OverallExpense = ({ status = "rejected" }) => {
 					<Row>
 						<Tabs
 							style={{ width: "100%" }}
-							defaultActiveKey="1"
+							defaultActiveKey="pending"
 							onChange={onChange}
 						>
-							<TabPane tab="Pending" key="1">
-								<PendingExpense status="pending" />
-							</TabPane>
-							<TabPane tab="Approved" key="2">
-								<PendingExpense status="approved" />
-							</TabPane>
-							<TabPane tab="Rejected" key="3">
-								<PendingExpense status="rejected" />
-								<ApiTable
-									apiURL="/expense"
-									apiData={{ status: "rejected" }}
-									columns={columns}
-								/>
-							</TabPane>
+							<TabPane tab="Pending" key="pending" />
+							<TabPane tab="Approved" key="approved" />
+							<TabPane tab="Rejected" key="rejected" />
 						</Tabs>
+						<Col span={24}>
+							<ApiTable
+								key={status}
+								apiURL="/expense"
+								apiData={{ status }}
+								columns={columns}
+								apiTableFunctions={setATF}
+								exportType="expense"
+								rowKey="id"
+								expandable={{
+									expandedRowRender: (record) => (
+										<ViewExpense record={record} />
+									),
+									rowExpandable: (record) => record.id !== "Not Expandable",
+									expandRowByClick: true,
+								}}
+							/>
+						</Col>
 					</Row>
 				</Col>
 				<Col span={4}>
